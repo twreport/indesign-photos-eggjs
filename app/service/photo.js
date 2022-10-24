@@ -210,6 +210,11 @@ class PhotoService extends Service {
 
     async select_photos(data) {
         const rows = await this.ctx.service.db.select_photos(data);
+        const photos = await this.format_photo_rows(rows);
+        return photos;
+    }
+
+    async format_photo_rows(rows) {
         let photos = [];
         for (const row of rows) {
             let item = row;

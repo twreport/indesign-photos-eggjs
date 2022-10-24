@@ -48,6 +48,38 @@ class FolderService extends Service {
         const updateSuccess = result.affectedRows === 1;
         return updateSuccess;
     }
+
+    async photos_by_folder_id(data) {
+        const start_num = parseInt(data.offset) * parseInt(data.limit);
+        const end_num = parseInt(data.limit);
+        const query = "SELECT p.* FROM tt_folder_photo as fp left join tt_photos as p on p.id = fp.photo_id left join tt_folder as f on f.id = fp.folder_id where f.id = " +
+            data.folder_id + " and p.status = 1 order by p." + data.order_by + " " + data.order_sort + " limit " + start_num + "," + end_num + ";";
+        console.log("query:", query);
+        const rows = await this.app.mysql.query(query);
+        const photos = await this.ctx.service.photo.format_photo_rows(rows);
+        return photos;
+    }
+
+    async folders_by_photo_id(photo_id, user_id) {
+        const query = "SELECT f.* FROM tt_folder_photo as fp left join tt_photos as p on p.id = fp.photo_id left join tt_folder as f on f.id = fp.folder_id where p.id = " +
+            photo_id + " and f.auth_id = " + user_id + ";";
+        console.log(query);
+        const rows = await this.app.mysql.query(query);
+        return rows;
+    }
+
+    async assign_photo_2_folder(data) {
+        const query = "select * from tt_folder_photo where folder_id=" + data.folder_id + " and photo_id=" + data.photo_id + ";";
+        console.log(query);
+        const rows = await this.app.mysql.query(query);
+        console.log(rows);
+        if(rows.length > 0){
+            return false;
+        }
+        const result = await this.app.mysql.insert('tt_folder_photo', data);
+        const insertSuccess = result.affectedRows === 1;
+        return insertSuccess;
+    }
 }
 
 module.exports = FolderService;

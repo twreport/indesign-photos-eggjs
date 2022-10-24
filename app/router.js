@@ -11,6 +11,8 @@ module.exports = app => {
   router.get('/get_current_photo', controller.photo.get_current_photo);
   router.get('/tags', controller.tag.get_tags);
   router.get('/init', controller.home.init);
+  router.post('/photos_by_folder_id', controller.folder.photos_by_folder_id);
+  router.get('/folders_by_photo_id/:photo_id', controller.folder.folders_by_photo_id);
 
   router.get('/user/:id', controller.user.get_user_by_id);
   router.get('/folders', controller.folder.get_folder_list_by_user_id);
@@ -27,4 +29,5 @@ module.exports = app => {
   router.post('/add_tag', controller.tag.add_tag);
   router.post('/del_tag', controller.tag.del_tag);
   router.post('/folder', controller.folder.add_folder);
+  router.post('/assign_photo_2_folder', controller.folder.assign_photo_2_folder);
 };
