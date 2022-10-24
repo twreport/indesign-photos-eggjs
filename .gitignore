@@ -13,5 +13,4 @@ run/
 *.un~
 typings/
 .nyc_output/
-public/
 uploads/
