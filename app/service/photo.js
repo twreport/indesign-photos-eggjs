@@ -33,9 +33,9 @@ class PhotoService extends Service {
         return result;
     }
 
-    async receive_photo(data, user_id) {
+    async receive_photo(data, user_id, folder_id) {
         const row = await this.format_photo_data(data);
-        const result = await this.ctx.service.db.insertOnePhoto(row, user_id);
+        const result = await this.ctx.service.db.insertOnePhoto(row, user_id, folder_id);
         return result;
     }
 
