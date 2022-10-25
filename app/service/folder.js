@@ -80,6 +80,11 @@ class FolderService extends Service {
         const insertSuccess = result.affectedRows === 1;
         return insertSuccess;
     }
+
+    async soft_delete_photo_link_folder(data) {
+        const result = await this.ctx.service.db.del_middle('tt_folder_photo', 'folder_id', data.folder_id, 'photo_id', data.photo_id);
+        return result;
+    }
 }
 
 module.exports = FolderService;

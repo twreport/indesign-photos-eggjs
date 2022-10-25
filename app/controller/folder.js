@@ -66,6 +66,13 @@ class FolderController extends Controller {
         const result = await ctx.service.folder.assign_photo_2_folder(data);
         ctx.body = result;
     }
+
+    async soft_delete_photo_link_folder() {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        const result = await ctx.service.folder.soft_delete_photo_link_folder(data);
+        ctx.body = result;
+    }
 }
 
 module.exports = FolderController

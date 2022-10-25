@@ -30,4 +30,5 @@ module.exports = app => {
   router.post('/del_tag', controller.tag.del_tag);
   router.post('/folder', controller.folder.add_folder);
   router.post('/assign_photo_2_folder', controller.folder.assign_photo_2_folder);
+  router.post('/soft_delete_photo_link_folder', controller.folder.soft_delete_photo_link_folder);
 };
