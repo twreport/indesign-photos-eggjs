@@ -7,7 +7,10 @@ class PhotoController extends Controller {
         const { ctx } = this;
         const data = ctx.request.body;
         const user_id = ctx.request.headers.user_id;
-        const folder_id = ctx.request.headers.folder_id;
+        let folder_id = ctx.request.headers.folder_id;
+        if(folder_id == undefined){
+            folder_id = null;
+        }
         console.log("folder_id:", folder_id);
         console.log(data);
         const result = await ctx.service.photo.receive_photo(data, user_id, folder_id);

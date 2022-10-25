@@ -58,7 +58,7 @@ class DbService extends Service {
         return updateSuccess;
     }
 
-    async insertOnePhoto(data, user_id, folder_id){
+    async insertOnePhoto(data, user_id){
         console.log('insert')
         console.log('data', data)
         console.log('user_id', user_id)
@@ -71,35 +71,17 @@ class DbService extends Service {
             // 判断插入成功
             const insertSuccess = result.affectedRows === 1;
             if(insertSuccess) {
-                // 中间表中新增一条用户-图片记录
+                // 中间表中新增一条记录
                 const new_row = {
                     'user_id': user_id,
                     'photo_id': result.insertId
                 }
                 const addResult = await this.add_db('tt_user_photo', new_row);
                 if(addResult !== false) {
-
-                    // 如果有默认目录，中间表中新增一条目录-图片记录
-                    if(folder_id != null){
-                        const new_folder_row = {
-                            'folder_id': folder_id,
-                            'photo_id': result.insertId
-                        }
-                        const addFolderResult = await this.add_db('tt_folder_photo', new_folder_row);
-                        if(addFolderResult !== false) {
-                            return result.insertId;
-                        }else{
-                            return false;
-                        }
-                    }else{
-                        return result.insertId;
-                    }
-
-
+                    return result.insertId;
                 }else{
                     return false;
                 }
-
             }else{
                 return false;
             }
@@ -119,24 +101,7 @@ class DbService extends Service {
                 }
                 const addResult = await this.add_db('tt_user_photo', new_row);
                 if(addResult !== false) {
-
-                    // 如果有默认目录，中间表中新增一条目录-图片记录
-                    if(folder_id != null){
-                        const new_folder_row = {
-                            'folder_id': folder_id,
-                            'photo_id': photo_id
-                        }
-                        const addFolderResult = await this.add_db('tt_folder_photo', new_folder_row);
-                        if(addFolderResult !== false) {
-                            return photo_id;
-                        }else{
-                            return false;
-                        }
-                    }else{
-                        return photo_id;
-                    }
-
-
+                    return photo_id;
                 }else{
                     return false;
                 }
