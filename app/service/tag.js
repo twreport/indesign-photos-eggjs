@@ -33,7 +33,7 @@ class TagService extends Service {
         const res = await this.app.mysql.delete('tt_tag_photo', {
             tag_id: id
         })
-        const delTagPhotoSuccess = result.affectedRows === 1;
+        const delTagPhotoSuccess = res.affectedRows === 1;
         if (delTagPhotoSuccess === false) {
             return delTagPhotoSuccess;
         }
