@@ -10,7 +10,8 @@
     "egg": "^3",
     "egg-mysql": "^3.1.1",
     "egg-scripts": "^2",
-    "md5": "^2.3.0"
+    "md5": "^2.3.0",
+    "stopwords-en": "^0.3.0"
   },
   "devDependencies": {
     "egg-bin": "^5",

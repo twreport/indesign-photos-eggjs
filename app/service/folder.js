@@ -49,14 +49,14 @@ class FolderService extends Service {
         return updateSuccess;
     }
 
-    async photos_by_folder_id(data) {
+    async photos_by_folder_id(data, user_id) {
         const start_num = parseInt(data.offset) * parseInt(data.limit);
         const end_num = parseInt(data.limit);
         const query = "SELECT p.* FROM tt_folder_photo as fp left join tt_photos as p on p.id = fp.photo_id left join tt_folder as f on f.id = fp.folder_id where f.id = " +
             data.folder_id + " and p.status = 1 order by p." + data.order_by + " " + data.order_sort + " limit " + start_num + "," + end_num + ";";
         console.log("query:", query);
         const rows = await this.app.mysql.query(query);
-        const photos = await this.ctx.service.photo.format_photo_rows(rows);
+        const photos = await this.ctx.service.photo.format_photo_rows(rows, user_id);
         return photos;
     }
 

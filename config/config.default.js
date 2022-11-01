@@ -42,7 +42,8 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
     BaseUrl: 'http://192.168.2.100:7001/public/uploads/',
-    LoadingLogo: 'loading.gif'
+    LoadingLogo: 'loading.gif',
+    PunctuationString: "`:_.~!@#$%^&*() \+ =<>?\"{}|, \/ ;' \\ [ \] ·~！@#￥%……&*（）—— \+ ={}|《》？：“”【】、；‘’，。、-"
   };
 
   config.middleware = ['token'];

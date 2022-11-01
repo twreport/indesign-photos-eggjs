@@ -34,6 +34,17 @@ class PhotoController extends Controller {
         ctx.body = {'result': result};
     }
 
+    async batch_delete_photo() {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        console.log(data);
+        const user_id = ctx.request.headers.user_id;
+        for(const item of data){
+            await ctx.service.photo.soft_delete_photo(item.id, user_id);
+        }
+        ctx.body = {'result': true};
+    }
+
     async resume_photo() {
         const { ctx } = this;
         const data = ctx.request.body;
@@ -67,6 +78,15 @@ class PhotoController extends Controller {
         const data = ctx.request.body;
         console.log(data);
         const result = await ctx.service.photo.get_main_photo(data.id);
+        ctx.body = {'result': result};
+    }
+
+    async get_instagram_img_base64()
+    {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        console.log(data);
+        const result = await ctx.service.photo.get_instagram_img_base64(data.src);
         ctx.body = {'result': result};
     }
 }

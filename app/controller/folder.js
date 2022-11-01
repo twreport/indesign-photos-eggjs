@@ -47,7 +47,8 @@ class FolderController extends Controller {
     async photos_by_folder_id() {
         const { ctx } = this;
         const data = ctx.request.body;
-        const result = await ctx.service.folder.photos_by_folder_id(data);
+        const user_id = ctx.request.headers.user_id;
+        const result = await ctx.service.folder.photos_by_folder_id(data, user_id);
         ctx.body = result;
     }
 
@@ -72,6 +73,16 @@ class FolderController extends Controller {
         const data = ctx.request.body;
         const result = await ctx.service.folder.soft_delete_photo_link_folder(data);
         ctx.body = result;
+    }
+
+    async batch_assign_folder() {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        console.log(data);
+        for(const item of data){
+            await ctx.service.folder.assign_photo_2_folder(item);
+        }
+        ctx.body = {'result': true};
     }
 }
 

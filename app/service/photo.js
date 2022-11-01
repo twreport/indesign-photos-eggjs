@@ -149,77 +149,22 @@ class PhotoService extends Service {
                 break;
         }
 
-        // //如果srcset为空，则返回初始url对象
-        // if (data.srcset.length > 0) {
-        //     // 将srcset分割
-        //     const srcset_arr = data.srcset.split(",");
-        //     if (data.host == 'www.pinterest.com' || data.host == 'www.pinterest.jp') {
-        //         for (let i = 0; i < srcset_arr.length; i++) {
-        //             const src_arr = srcset_arr[i].trim().split(" ");
-        //             //分解出url和标注
-        //             console.log(src_arr)
-        //             if (src_arr[1] == "4x") {
-        //                 //得到大图url
-        //                 url_obj['url'] = src_arr[0];
-        //             } else if (src_arr[1] == "2x") {
-        //                 //得到中图url
-        //                 url_obj['m_url'] = src_arr[0];
-        //             } else if (src_arr[1] == "1x") {
-        //                 //得到小图url
-        //                 url_obj['sm_url'] = src_arr[0];
-        //             }
-        //         }
-        //     } else if (data.host == 'www.instagram.com') {
-        //         if (data.srcset.indexOf('1080w') != -1) {
-        //             //如果srcset中包含1080w，说明是大图模式
-        //             for (let i = 0; i < srcset_arr.length; i++) {
-        //                 const src_arr = srcset_arr[i].trim().split(" ");
-        //                 //分解出url和标注
-        //                 if (src_arr[1] == "1080w") {
-        //                     //得到大图url，如果i大于当前轮数，说明发现了更大图
-        //                     url_obj['url'] = src_arr[0];
-        //                 } else if (src_arr[1] == "640w") {
-        //                     //得到中图url
-        //                     url_obj['m_url'] = src_arr[0];
-        //                 } else if (src_arr[1] == "240w") {
-        //                     //得到小图url
-        //                     url_obj['sm_url'] = src_arr[0];
-        //                 }
-        //             }
-        //         } else {
-        //             for (let i = 0; i < srcset_arr.length; i++) {
-        //                 const src_arr = srcset_arr[i].trim().split(" ");
-        //                 //分解出url和标注
-        //                 if (src_arr[1] == "640w") {
-        //                     //得到大图url，如果i大于当前轮数，说明发现了更大图
-        //                     url_obj['url'] = src_arr[0];
-        //                 } else if (src_arr[1] == "320w") {
-        //                     //得到中图url
-        //                     url_obj['m_url'] = src_arr[0];
-        //                 } else if (src_arr[1] == "150w") {
-        //                     //得到小图url
-        //                     url_obj['sm_url'] = src_arr[0];
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
         console.log("url_obj", url_obj)
         return url_obj;
     }
 
     async select_photos(data) {
         const rows = await this.ctx.service.db.select_photos(data);
-        const photos = await this.format_photo_rows(rows);
+        const photos = await this.format_photo_rows(rows, data.user_id);
         return photos;
     }
 
-    async format_photo_rows(rows) {
+    async format_photo_rows(rows, user_id) {
         let photos = [];
         for (const row of rows) {
             let item = row;
             if (row.name.length > 20) {
-                item['name'] = row.name.slice(0, 20) + '...'
+                item['name'] = row.name.slice(0, 18) + '...'
             }
             if (row.sm_path.length > 0) {
                 item['sm_path'] = this.app.config.BaseUrl + row.sm_path;
@@ -228,6 +173,10 @@ class PhotoService extends Service {
                 item['sm_path'] = this.app.config.BaseUrl + this.app.config.LoadingLogo;
                 item['path'] = this.app.config.BaseUrl + this.app.config.LoadingLogo;
             }
+
+            item['ai_tag_list'] = await this.ctx.service.tag.get_ai_tags_of_current_photo(row);
+            // item['tags_list'] = await this.ctx.service.tag.get_tags_of_current_photo(row.id);
+            // item['folder_list'] = await this.ctx.service.folder.folders_by_photo_id(row.id, user_id);
             photos.push(item);
         }
         return photos;
@@ -257,6 +206,18 @@ class PhotoService extends Service {
         const row = await this.ctx.service.db.getMainPhoto(id);
         const data = await this.format_photo_url(row);
         return data;
+    }
+
+    async get_instagram_img_base64(src)
+    {
+        const imgData = await this.ctx.curl(src, {
+            headers: 'Access-Control-Allow-Origin:*',
+        })
+        console.log(typeof imgData)
+        console.log(imgData)
+        const base64 = imgData.data.toString('base64')
+        console.log(base64);
+        return base64;
     }
 }
 
