@@ -33,10 +33,12 @@ class TagService extends Service {
         const res = await this.app.mysql.delete('tt_tag_photo', {
             tag_id: id
         })
+
         const delTagPhotoSuccess = res.affectedRows === 1;
-        if (delTagPhotoSuccess === false) {
-            return delTagPhotoSuccess;
-        }
+        console.log("delTagPhotoSuccess",delTagPhotoSuccess)
+        // if (delTagPhotoSuccess === false) {
+        //     return delTagPhotoSuccess;
+        // }
         //然后再删除tag本身记录
         const result = await this.app.mysql.delete('tt_tags', {
             id: id,
