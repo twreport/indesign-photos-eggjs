@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "egg": "^3",
+    "egg-cors": "^2.2.3",
     "egg-mysql": "^3.1.1",
     "egg-scripts": "^2",
+    "jszip": "^3.10.1",
     "md5": "^2.3.0",
     "stopwords-en": "^0.3.0"
   },
