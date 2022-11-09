@@ -1,5 +1,6 @@
 'use strict';
 const Service = require('egg').Service;
+const fs = require('fs');
 
 class PhotoService extends Service {
     async get_current_photo(user_id) {
@@ -33,6 +34,26 @@ class PhotoService extends Service {
         return result;
     }
 
+    // 处理base64图片
+    async handleBase64(data) {
+        const imgInfoArr = data.src.split(';base64,');
+        const base64Data = imgInfoArr[1];
+        const ext = imgInfoArr[0].replace('data:image/', '');
+        const dataBuffer = new Buffer(base64Data, 'base64');
+        const today = await this.ctx.service.utils.getToday();
+        const basePath = this.app.config.BasePath;
+        const imgFullPath = basePath + today + "/";
+        if (!fs.existsSync(imgFullPath)) {
+            fs.mkdirSync(imgFullPath);
+        }
+        const imgName = await this.ctx.service.utils.getRandomString();
+        const imgFullName = imgFullPath + imgName + '.' + ext;
+        fs.writeFileSync(imgFullName, dataBuffer);
+        data['path'] = today + "/" + imgName + '.' + ext;
+        data['src'] = this.app.config.BaseUrl + data['path'];
+        return data;
+    }
+
     async receive_photo(data, user_id, folder_id) {
         const row = await this.format_photo_data(data);
         const result = await this.ctx.service.db.insertOnePhoto(row, user_id, folder_id);
@@ -41,12 +62,40 @@ class PhotoService extends Service {
 
     async format_photo_data(data) {
         const now_time = parseInt(new Date().getTime() / 1000);
+
         let alt = data.alt.replace('其中包括图片：', '');
         if (alt == '') {
             alt = 'pic_' + now_time.toString()
         }
-        const url = await this.get_url_from_srcset(data);
 
+        // google.com或其他网站的base64图片另行处理
+        if (data.src.indexOf('data:image/jpeg;base64') != -1) {
+            const res = await this.handleBase64(data);
+            const base64row = {
+                'name': alt,
+                'alt': alt,
+                'src': res.src,
+                'srcset': res.srcset,
+                'source_page': res.src,
+                'host': res.host,
+                'url': res.src,
+                'm_url': res.src,
+                'sm_url': res.src,
+                'path': res.path,
+                'm_path': res.path,
+                'sm_path': res.path,
+                'photoset_id': 0,
+                'color_id': 0,
+                'author_id': 0,
+                'ai_id': 0,
+                'add_time': now_time,
+                'status': 1
+            }
+            return base64row;
+        }
+
+        // 正常图片走scrapy下载流程
+        const url = await this.get_url_from_srcset(data);
         const row = {
             'name': alt,
             'alt': alt,
@@ -147,6 +196,8 @@ class PhotoService extends Service {
                     //如果不存在srcset，则直接把src作为大图
                 }
                 break;
+            default:
+                break;
         }
 
         console.log("url_obj", url_obj)
@@ -208,8 +259,7 @@ class PhotoService extends Service {
         return data;
     }
 
-    async get_instagram_img_base64(src)
-    {
+    async get_instagram_img_base64(src) {
         const imgData = await this.ctx.curl(src, {
             headers: 'Access-Control-Allow-Origin:*',
         })

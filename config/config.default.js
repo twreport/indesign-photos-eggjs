@@ -42,6 +42,7 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
     BaseUrl: 'http://192.168.2.100:7001/public/uploads/',
+    BasePath: '/indesign/www/html/tp5/public/static/uploads/',
     LoadingLogo: 'loading.gif',
     PunctuationString: "`:_.~!@#$%^&*() \+ =<>?\"{}|, \/ ;' \\ [ \] ·~！@#￥%……&*（）—— \+ ={}|《》？：“”【】、；‘’，。、-"
   };

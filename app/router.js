@@ -13,7 +13,10 @@ module.exports = app => {
   router.get('/init', controller.home.init);
   router.post('/photos_by_folder_id', controller.folder.photos_by_folder_id);
   router.get('/folders_by_photo_id/:photo_id', controller.folder.folders_by_photo_id);
+  router.get('/folders_by_parent_id/:parent_id', controller.folder.folders_by_parent_id);
   router.get('/get_tags_by_photo_id/:photo_id', controller.tag.get_tags_by_photo_id);
+  router.get('/get_heir_tree/:folder_id', controller.folder.get_heir_tree);
+  router.get('/get_whole_tree', controller.folder.get_whole_tree);
 
   router.get('/user/:id', controller.user.get_user_by_id);
   router.get('/folders', controller.folder.get_folder_list_by_user_id);
@@ -33,6 +36,7 @@ module.exports = app => {
   router.post('/batch_assign_tag', controller.tag.batch_assign_tag);
   router.post('/batch_assign_folder', controller.folder.batch_assign_folder);
   router.post('/del_tag_photo', controller.tag.del_tag_photo);
+  router.post('/move_photos', controller.folder.move_photos);
 
   router.post('/batch_delete_photo', controller.photo.batch_delete_photo);
   router.post('/del_tag', controller.tag.del_tag);

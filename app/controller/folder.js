@@ -9,7 +9,9 @@ class FolderController extends Controller {
         const data = ctx.request.body;
         const user_id = ctx.request.headers.user_id;
         console.log(data);
-        const result = await ctx.service.folder.get_folder_list_by_user_id(user_id);
+        // 旧方法，已废弃
+        // const result = await ctx.service.folder.get_folder_list_by_user_id(user_id);
+        const result = await ctx.service.folder.get_whole_tree(user_id);
         ctx.body = result;
     }
 
@@ -61,10 +63,20 @@ class FolderController extends Controller {
         ctx.body = result;
     }
 
+
+    async folders_by_parent_id() {
+        const { ctx } = this;
+        const parent_id = ctx.params.parent_id;
+        const result = await ctx.service.folder.folders_by_parent_id(parent_id);
+        ctx.body = result;
+    }
+
+
     async assign_photo_2_folder() {
         const { ctx } = this;
         const data = ctx.request.body;
-        const result = await ctx.service.folder.assign_photo_2_folder(data);
+        const user_id = ctx.request.headers.user_id;
+        const result = await ctx.service.folder.assign_photo_2_folder(data, user_id);
         ctx.body = result;
     }
 
@@ -78,11 +90,37 @@ class FolderController extends Controller {
     async batch_assign_folder() {
         const { ctx } = this;
         const data = ctx.request.body;
+        const user_id = ctx.request.headers.user_id;
         console.log(data);
         for(const item of data){
-            await ctx.service.folder.assign_photo_2_folder(item);
+            await ctx.service.folder.assign_photo_2_folder(item, user_id);
         }
         ctx.body = {'result': true};
+    }
+
+    async move_photos() {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        console.log(data);
+        for(const photo of data.photos){
+            await ctx.service.folder.move_photos(photo.id, data.from_folder_id, data.to_folder_id);
+        }
+        ctx.body = {'result': true};
+    }
+
+    async get_heir_tree() {
+        const { ctx } = this;
+        const folder_id = ctx.params.folder_id;
+        const result = await ctx.service.folder.get_heir_tree(folder_id);
+        ctx.body = result;
+    }
+
+    async get_whole_tree() {
+        const { ctx } = this;
+        const user_id = ctx.request.headers.user_id;
+        const result = await ctx.service.folder.get_whole_tree(user_id);
+        console.log("result", result)
+        ctx.body = result;
     }
 }
 
