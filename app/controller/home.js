@@ -88,6 +88,98 @@ class HomeController extends Controller {
         return result;
     }
 
+    async readEagleJSON() {
+        const url = '/var/www/html/tp5/public/eagle/tuku.library/metadata.json';
+        const that = this;
+        fs.readFile(url, 'utf-8', async function(err, data){
+            if(err){
+                console.log(err)
+            }
+            var folders = JSON.parse(data);
+            const f1 = folders.folders;
+            const res = await that.ctx.service.folder.saveEagleFolderFamily(f1, 0);
+            console.log('result', res);
+        })
+    }
+
+    async readEagleImg() {
+        const url = '/var/www/html/tp5/public/eagle/tuku.library/images/';
+        fs.readdir(url, (err, data)=>{
+            if(err) return console.log(err)
+            for(const dirName of data){
+                const childFileName = url + dirName + '/metadata.json'
+                var that = this;
+                fs.readFile(childFileName, 'utf-8', async function(error, jsonData){
+                    if(error){
+                        console.log(error);
+                        return false;
+                    }
+                    const photo = JSON.parse(jsonData);
+                    const photo_set = await that.app.mysql.select('tt_photo_set', {
+                        where: {'eagle_id': photo.folders[0]}
+                    })
+                    let photoset_id = 0;
+                    if(photo_set.length > 0){
+                        photoset_id = photo_set[0].id;
+                    }
+                    const now = Math.round(new Date().getTime()/1000);
+                    const row = {
+                        'name': photo.encodeName,
+                        'alt': photo.id,
+                        'src': '',
+                        'srcset': '',
+                        'source_page': photo.url,
+                        'host': 'eagle',
+                        'url': '',
+                        'm_url': '',
+                        'sm_url': '',
+                        'path': 'images/' + dirName + '/' + photo.name + '.' + photo.ext,
+                        'm_path': 'images/' + dirName + '/' + photo.name + '.' + photo.ext,
+                        'sm_path': 'images/' + dirName + '/' + photo.name + '_thumbnail.' + photo.ext,
+                        'photoset_id': photoset_id,
+                        'color_id': 0,
+                        'author_id': 0,
+                        'ai_id': 0,
+                        'add_time': now,
+                        'status': 1
+                    }
+                    console.log(row)
+                    const res = await that.app.mysql.insert('tt_eagle', row);
+                })
+            }
+        })
+    }
+
+    async trans_old(){
+        const old_imgs = await this.app.mysql.select('color_photos', {});
+        const now = Math.round(new Date().getTime()/1000);
+
+        for(const old_img of old_imgs)
+        {
+            const row = {
+                'name': old_img.name,
+                'alt': old_img.alt,
+                'src': old_img.save_name,
+                'srcset': '',
+                'source_page': old_img.save_name,
+                'host': 'old',
+                'url': old_img.crawl_url,
+                'm_url': old_img.crawl_m_url,
+                'sm_url': old_img.crawl_sm_url,
+                'path': old_img.url,
+                'm_path': old_img.m_url,
+                'sm_path': old_img.sm_url,
+                'photoset_id': 0,
+                'color_id': 0,
+                'author_id': 0,
+                'ai_id': 0,
+                'add_time': now,
+                'status': 1
+            }
+            const res = await this.app.mysql.insert('tt_images', row);
+        } 
+    }
+
 }
 
 module.exports = HomeController;

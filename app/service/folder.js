@@ -160,7 +160,8 @@ class FolderService extends Service {
         const rows = await this.app.mysql.select('tt_folder', {
             where: {
                 'auth_id': user_id,
-                'parent_id': 0
+                'parent_id': 0,
+                'status': 1
             }
         })
         console.log('rows', rows)
@@ -176,7 +177,8 @@ class FolderService extends Service {
     // 递归函数，获得指定目录的所有子目录
     async get_tree(row) {
         const leafs = await this.app.mysql.select('tt_folder', {
-            where: { "parent_id": row.id }
+            where: { "parent_id": row.id,
+                    "status": 1 }
         })
         if (leafs.length > 0) {
             row['children'] = [];
@@ -186,6 +188,46 @@ class FolderService extends Service {
             return row;
         } else {
             return row;
+        }
+    }
+
+    async save_eagle_folders(folder_list){
+        const now_time = parseInt(new Date().getTime() / 1000);
+        for(const folder of folder_list) {
+            const folder_row = {
+                'eagle_id': folder.id,
+                'name': folder.name,
+                'parent_id': 0,
+                'main_url': '',
+                'desc': folder.name,
+                'add_time': now_time,
+                'status': 1
+            }
+            const result = await this.app.mysql.insert('tt_photo_set', folder_row);
+        }
+        return false;
+    }
+
+    // 递归函数，挖掘所有子目录
+    async saveEagleFolderFamily(children, parent_id)
+    {
+        const now_time = parseInt(new Date().getTime() / 1000);
+        for(const folder of children){
+            const folder_row = {
+                'eagle_id': folder.id,
+                'name': folder.name,
+                'parent_id': parent_id,
+                'main_url': '',
+                'desc': folder.name,
+                'add_time': now_time,
+                'status': 1
+            }
+            const result = await this.app.mysql.insert('tt_photo_set', folder_row);
+            console.log('saved!');
+            console.log(result)
+            if(folder.children.length > 0){
+                this.saveEagleFolderFamily(folder.children, result.insertId);
+            }
         }
     }
 

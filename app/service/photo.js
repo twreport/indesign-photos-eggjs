@@ -99,7 +99,7 @@ class PhotoService extends Service {
         const row = {
             'name': alt,
             'alt': alt,
-            'src': data.src,
+            'src': url.sm_url,
             'srcset': data.srcset,
             'source_page': data.url,
             'host': data.host,
@@ -124,8 +124,11 @@ class PhotoService extends Service {
         let url_obj = {
             'url': data.src,
             'm_url': data.src,
-            'sm_url': data.src
+            'sm_url': data.src,
+            'src': data.src
         };
+        console.log('-----------------------host----------------------------')
+        console.log(data.host)
         switch (data.host) {
             case 'www.pinterest.com':
             case 'www.pinterest.jp':
@@ -196,6 +199,27 @@ class PhotoService extends Service {
                     //如果不存在srcset，则直接把src作为大图
                 }
                 break;
+            case 'livden.com':
+                if (data.srcset.length > 0) {
+                    const srcset_arr = data.srcset.split(",");
+                    const sm_url_index = 0;
+                    const url_index = srcset_arr.length - 1;
+                    const m_url_index = Math.floor((srcset_arr.length - 1) / 2);
+                    for (let i = 0; i < srcset_arr.length; i++) {
+                        const src_arr = srcset_arr[i].trim().split(" ");
+                        //分解出url和标注
+                        if (i == sm_url_index) {
+                            //得到小图url
+                            url_obj['sm_url'] = 'https:' + src_arr[0];
+                        } else if (i == m_url_index) {
+                            //得到中图url
+                            url_obj['m_url'] = 'https:' + src_arr[0];
+                        } else if (i == url_index) {
+                            //得到大图url
+                            url_obj['url'] = 'https:' + src_arr[0];
+                        }
+                    }
+                }
             default:
                 break;
         }

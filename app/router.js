@@ -17,7 +17,10 @@ module.exports = app => {
   router.get('/get_tags_by_photo_id/:photo_id', controller.tag.get_tags_by_photo_id);
   router.get('/get_heir_tree/:folder_id', controller.folder.get_heir_tree);
   router.get('/get_whole_tree', controller.folder.get_whole_tree);
-
+  router.get('/eagle_folder', controller.home.readEagleJSON);
+  router.get('/eagle_img', controller.home.readEagleImg);
+  router.get('/trans_old', controller.home.trans_old);
+  
   router.get('/user/:id', controller.user.get_user_by_id);
   router.get('/folders', controller.folder.get_folder_list_by_user_id);
   router.put('/user', controller.user.edit_user);
