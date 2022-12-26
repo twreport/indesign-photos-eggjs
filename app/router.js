@@ -15,6 +15,7 @@ module.exports = app => {
   router.get('/folders_by_photo_id/:photo_id', controller.folder.folders_by_photo_id);
   router.get('/folders_by_parent_id/:parent_id', controller.folder.folders_by_parent_id);
   router.get('/get_tags_by_photo_id/:photo_id', controller.tag.get_tags_by_photo_id);
+  router.get('/get_tags_by_photo_id_with_tag_detail/:photo_id', controller.tag.get_tags_by_photo_id_with_tag_detail);
   router.get('/get_heir_tree/:folder_id', controller.folder.get_heir_tree);
   router.get('/get_whole_tree', controller.folder.get_whole_tree);
   router.get('/eagle_folder', controller.home.readEagleJSON);
@@ -22,12 +23,15 @@ module.exports = app => {
   router.get('/trans_old', controller.home.trans_old);
   
   router.get('/user/:id', controller.user.get_user_by_id);
+  router.get('/colors/:photo_id', controller.color.get_color_by_photo_id);
   router.get('/folders', controller.folder.get_folder_list_by_user_id);
   router.put('/user', controller.user.edit_user);
   router.put('/folder', controller.folder.edit_folder);
   router.delete('/folder/:id', controller.folder.soft_del_folder);
+  router.get('/photos_by_color_id/:standard_id', controller.color.getPhotosByMainColorId);
 
   router.post('/send_photo', controller.photo.receive_photo);
+  router.post('/get_photo_by_photo_id', controller.photo.get_photo_by_photo_id);
   router.post('/soft_delete_photo', controller.photo.soft_delete_photo);
   router.post('/resume_photo', controller.photo.resume_photo)
   router.post('/get_main_photo', controller.photo.get_main_photo);

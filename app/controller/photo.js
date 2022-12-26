@@ -25,6 +25,15 @@ class PhotoController extends Controller {
         ctx.body = {'result': result};
     }
 
+    async get_photo_by_photo_id()
+    {
+        const { ctx } = this;
+        const data = ctx.request.body;
+        console.log(data);
+        const result = await ctx.service.photo.get_photo_by_photo_id(data.db_name, data.id);
+        ctx.body = {'result': result};
+    }
+
     async soft_delete_photo() {
         const { ctx } = this;
         const data = ctx.request.body;

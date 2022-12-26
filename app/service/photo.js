@@ -9,6 +9,13 @@ class PhotoService extends Service {
         return data;
     }
 
+    async get_photo_by_photo_id(db_name, id)
+    {
+        const row = await this.app.mysql.get(db_name, {id: id})
+        const data = await this.format_photo_url(row);
+        return data;
+    }
+
     async format_photo_url(row) {
         if (row['sm_path'].length > 0) {
             //如果sm_path存在说明有本地图片，则一律使用本地图片
@@ -132,6 +139,9 @@ class PhotoService extends Service {
         switch (data.host) {
             case 'www.pinterest.com':
             case 'www.pinterest.jp':
+            case 'www.pinterest.es':
+            case 'www.pinterest.sg':
+
                 if (data.srcset.length > 0) {
                     const srcset_arr = data.srcset.split(",");
                     for (let i = 0; i < srcset_arr.length; i++) {

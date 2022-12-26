@@ -74,6 +74,23 @@ class TagService extends Service {
         return tag_photo;
     }
 
+    async get_tags_by_photo_id_with_tag_detail(photo_id) {
+        const tag_photo = await this.app.mysql.select('tt_tag_photo', {
+            where: {'photo_id': photo_id}
+        })
+        let rows = [];
+        for(const tp of tag_photo){
+            const tag = await this.app.mysql.get('tt_tags', {id: tp['tag_id']})
+            const row = {
+                'id': tag.id,
+                'name': tag.tag_name
+            }
+            rows.push(row)
+        }
+
+        return rows;
+    }
+
     async add_tag_photo(data) {
         console.log("data in service add_tag_photo",data)
         const query = "select * from tt_tag_photo where photo_id=" + data.photo_id + " and tag_id=" + data.tag_id + ";";

@@ -77,5 +77,14 @@ class TagController extends Controller {
         const result = await ctx.service.tag.photos_by_tag_id(data, user_id);
         ctx.body = result;
     }
+
+    async get_tags_by_photo_id_with_tag_detail()
+    {
+        const { ctx } = this;
+        const photo_id = ctx.params.photo_id;
+        console.log(photo_id)
+        const result = await ctx.service.tag.get_tags_by_photo_id_with_tag_detail(photo_id);
+        ctx.body = {'result': result};
+    }
 }
 module.exports = TagController;
